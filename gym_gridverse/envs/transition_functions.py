@@ -18,6 +18,9 @@ from gym_gridverse.grid_object import (
     MovingObstacle,
     NoneGridObject,
     Telepod,
+    Map,
+    Color,
+    Exit
 )
 from gym_gridverse.rng import get_gv_rng_if_none
 from gym_gridverse.state import State
@@ -29,7 +32,7 @@ from gym_gridverse.utils.protocols import (
     get_positional_parameters,
 )
 from gym_gridverse.utils.registry import FunctionRegistry
-
+import pdb
 
 class TransitionFunction(Protocol):
     """Signature that all reset functions must follow"""
@@ -186,6 +189,21 @@ def move_agent(
     else:
         if not obj.blocks_movement:
             state.agent.position = next_position
+
+            map_obj = state.grid[4, 1]
+            if isinstance(state.grid[state.agent.position], Map):
+                
+                if isinstance(state.grid[2, 5], Exit):
+                    map_obj.state = Map.MapStatus.TOP
+                    map_obj.color = Color.BLUE
+                else:
+                    map_obj.state = Map.MapStatus.BOTTOM
+                    map_obj.color = Color.YELLOW
+            else:
+                map_obj.state = Map.MapStatus.UNSEEN
+                map_obj.color = Color.RED
+
+                        
 
 
 @transition_function_registry.register

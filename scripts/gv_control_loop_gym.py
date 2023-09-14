@@ -75,11 +75,15 @@ def main(args):
         print_compact(observation)
         print()
         time.sleep(spf)
+        actions = [0, 0, 0, 1, 0, 1, 0, 1, 0, 1]
         for ti in range(10): #itt.count():
             print(f'episode: {ei}')
             print(f'time: {ti}')
             # pdb.set_trace()
-            action = env.action_space.sample()
+
+            #0 is down, 1 is up, 2 is right, 3 is left.
+            #action = env.action_space.sample()
+            action = actions[ti]
             observation, reward, done, _ = env.step(action)
             episode.append(env.render(mode="rgb_array")[0])
 
@@ -94,7 +98,7 @@ def main(args):
 
             if done:
                 break
-    out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 10, (episode[0].shape[1], episode[0].shape[0]), True)
+    out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 5, (episode[0].shape[1], episode[0].shape[0]), True)
     for i in episode:
         out.write(i)
     out.release()

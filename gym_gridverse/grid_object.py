@@ -385,6 +385,47 @@ class Box(GridObject):
     def __repr__(self):
         return f'{self.__class__.__name__}({self.content!r})'
 
+class Map(GridObject):
+    """A box which can be broken and may contain another object."""
+
+    state_index = 0
+    color = Color.NONE
+    blocks_movement = False
+    blocks_vision = False
+    holdable = False
+
+    state: Status
+
+    class MapStatus(enum.Enum):
+        TOP = 0
+        BOTTOM = enum.auto()
+        UNSEEN = enum.auto()
+
+    def __init__(self, state: Door.Status, color: Color):
+        super().__init__()
+        self.state = state
+        self.color = color
+
+    @classmethod
+    def can_be_represented_in_state(cls) -> bool:
+        return True
+
+    @classmethod
+    def num_states(cls) -> int:
+        return 3
+
+    @property
+    def is_unseen(self) -> bool:
+        """returns whether the map is unseen by the agent (status 2)."""
+        return self.state is Map.MapStatus.UNSEEN
+
+    def is_top(self) -> bool:
+        """returns whether the goal is on the top (status 0)."""
+        return self.state is self.TOP
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.content!r})'
+
 
 class Telepod(GridObject):
     """A pod which teleports elsewhere."""

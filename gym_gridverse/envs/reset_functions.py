@@ -30,6 +30,7 @@ from gym_gridverse.grid_object import (
     MovingObstacle,
     Telepod,
     Wall,
+    Map
 )
 from gym_gridverse.rng import choice, choices, get_gv_rng_if_none, shuffle
 from gym_gridverse.state import State
@@ -635,6 +636,7 @@ def tigerdoor(
     draw_line_vertical(state.grid, range(1, 5), 2, Wall)
 
     state.grid[3, 2] = Floor()
+    state.grid[4, 1] = Map(Map.MapStatus.UNSEEN, Color.RED)
 
     if goal_top:
         state.grid[2, 5] = Exit()
@@ -645,7 +647,7 @@ def tigerdoor(
 
     # Place agent on top left
     state.agent.position = Position(1, 1)
-    state.agent.orientation = Orientation.R
+    state.agent.orientation = Orientation.B
 
     return state
 
