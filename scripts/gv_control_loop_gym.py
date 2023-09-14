@@ -3,10 +3,10 @@ import argparse
 import itertools as itt
 import time
 from typing import Dict
-
+import cv2
 import gym
 import numpy as np
-
+import pdb
 from gym_gridverse.envs.yaml.factory import factory_env_from_yaml
 from gym_gridverse.gym import GymEnvironment
 from gym_gridverse.outer_env import OuterEnv
@@ -63,27 +63,25 @@ def main(args):
     env.reset()
 
     spf = 1 / args.fps
-
-    for ei in itt.count():
+    episode = []
+    for ei in range(1): #itt.count():
         print(f'# Episode {ei}')
         print()
-
+        
         observation = env.reset()
-        env.render()
+        episode.append(env.render(mode="rgb_array")[0])
 
         print('observation:')
         print_compact(observation)
         print()
-
         time.sleep(spf)
-
-        for ti in itt.count():
+        for ti in range(10): #itt.count():
             print(f'episode: {ei}')
             print(f'time: {ti}')
-
+            # pdb.set_trace()
             action = env.action_space.sample()
             observation, reward, done, _ = env.step(action)
-            env.render()
+            episode.append(env.render(mode="rgb_array")[0])
 
             print(f'action: {action}')
             print(f'reward: {reward}')
@@ -96,7 +94,10 @@ def main(args):
 
             if done:
                 break
-
+    out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 10, (episode[0].shape[1], episode[0].shape[0]), True)
+    for i in episode:
+        out.write(i)
+    out.release()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -294,7 +294,7 @@ def keydoor(shape: Shape, *, rng: Optional[rnd.Generator] = None) -> State:
     line_wall = draw_line_vertical(
         state.grid, range(1, shape.height - 1), x_wall, Wall
     )
-
+    
     # Place yellow, locked door
     pos_wall = choice(rng, line_wall)
     state.grid[pos_wall] = Door(Door.Status.LOCKED, Color.YELLOW)
@@ -591,6 +591,64 @@ def memory_rooms(
         grid[exit_position] = Exit(exit_color)
 
     return State(grid, agent)
+
+
+@reset_function_registry.register
+def tigerdoor(
+    shape: Shape,
+    goal_top: bool,
+    *,
+    rng: Optional[rnd.Generator] = None,
+) -> State:
+    """An environment with "rivers" to be crosses
+
+    Creates a height x width (including wall) grid with random rows/columns of
+    objects called "rivers". The agent needs to navigate river openings to
+    reach the exit.  For example::
+
+        #########
+        #@    # #
+        #### ####
+        #     # #
+        ## ######
+        #       #
+        #     # #
+        #     #E#
+        #########
+
+    Args:
+        shape (`Shape`): shape (odd height and width) of grid
+        num_rivers (`int`): number of `rivers`
+        object_type (`Type[GridObject]`): river's object type
+        rng: (`Generator, optional`)
+
+    Returns:
+        State:
+    """
+    print("Trying")
+    rng = get_gv_rng_if_none(rng)
+
+    state = empty(shape)
+
+    draw_line_horizontal(state.grid, 1, range(2, 6), Wall)   
+    draw_line_horizontal(state.grid, 3, range(4, 6), Wall)   
+    draw_line_vertical(state.grid, range(1, 5), 2, Wall)
+
+    state.grid[3, 2] = Floor()
+
+    if goal_top:
+        state.grid[2, 5] = Exit()
+        state.grid[4, 5] = MovingObstacle()
+    else:
+        state.grid[4, 5] = Exit()
+        state.grid[2, 5] = MovingObstacle()       
+
+    # Place agent on top left
+    state.agent.position = Position(1, 1)
+    state.agent.orientation = Orientation.R
+
+    return state
+
 
 
 def factory(name: str, **kwargs) -> ResetFunction:
