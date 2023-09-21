@@ -26,7 +26,7 @@ from gym_gridverse.utils.space_builders import (
     ObservationSpaceBuilder,
     StateSpaceBuilder,
 )
-
+import pdb
 
 def process_reserved_keys(data):
     if 'transition_functions' in data:
@@ -242,5 +242,4 @@ def factory_env_from_data(data) -> InnerEnv:
 def factory_env_from_yaml(path: str) -> InnerEnv:
     with open(path) as f:
         data = yaml.safe_load(f)
-
     return factory_env_from_data(data)

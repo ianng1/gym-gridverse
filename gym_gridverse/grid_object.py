@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import abc
 import enum
+from enum import IntEnum # for indexing colors
 from collections import UserList
 from typing import Callable, List, Type
 
@@ -12,11 +13,12 @@ from typing_extensions import TypeAlias
 class Color(enum.Enum):
     """Color of grid objects"""
 
-    NONE = 0
-    RED = enum.auto()
+    
+    RED = 0
     GREEN = enum.auto()
     BLUE = enum.auto()
     YELLOW = enum.auto()
+    NONE = enum.auto()
 
 
 class GridObjectRegistry(UserList):
@@ -394,16 +396,17 @@ class Map(GridObject):
     blocks_vision = False
     holdable = False
 
-    state: Status
+    agent_location = (0, 0)
+    state: MapStatus
 
-    class MapStatus(enum.Enum):
-        TOP = 0
+    class MapStatus(enum.IntEnum):
+        UNSEEN = 0
+        TOP = enum.auto()
         BOTTOM = enum.auto()
-        UNSEEN = enum.auto()
 
-    def __init__(self, state: Door.Status, color: Color):
+    def __init__(self, state: Map.MapStatus, agent_location: tuple, color: Color):
         super().__init__()
-        self.state = state
+        self.state = [int(state), agent_location[0], agent_location[1]]
         self.color = color
 
     @classmethod
@@ -412,7 +415,11 @@ class Map(GridObject):
 
     @classmethod
     def num_states(cls) -> int:
-        return 3
+        return 300
+
+    @property
+    def state_index(self) -> int:
+        return self.state[0]*100 + self.state[1]*10 + self.state[2] #janky way of storing all information
 
     @property
     def is_unseen(self) -> bool:
@@ -424,7 +431,7 @@ class Map(GridObject):
         return self.state is self.TOP
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({self.content!r})'
+        return f'{self.__class__.__name__}({self.state!s})'
 
 
 class Telepod(GridObject):

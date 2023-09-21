@@ -11,7 +11,7 @@ from gym_gridverse.envs.visibility_functions import (
     VisibilityFunction,
     visibility_function_registry,
 )
-from gym_gridverse.geometry import Area, Orientation, Position
+from gym_gridverse.geometry import Area, Orientation, Position, Transform
 from gym_gridverse.grid_object import Hidden
 from gym_gridverse.observation import Observation
 from gym_gridverse.state import State
@@ -22,7 +22,7 @@ from gym_gridverse.utils.protocols import (
     get_positional_parameters,
 )
 from gym_gridverse.utils.registry import FunctionRegistry
-
+import pdb
 
 class ObservationFunction(Protocol):
     def __call__(
@@ -42,7 +42,6 @@ class ObservationFunctionRegistry(FunctionRegistry):
     def check_signature(self, function: ObservationFunction):
         signature = inspect.signature(function)
         state, rng = self.get_protocol_parameters(signature)
-
         # checks first argument is positional ...
         if state.kind not in [
             inspect.Parameter.POSITIONAL_OR_KEYWORD,
@@ -131,6 +130,39 @@ def from_visibility(
     )
     return Observation(observation_grid, observation_agent)
 
+@observation_function_registry.register
+def static_camera(
+    state: State,
+    *,
+    area: Area,
+    visibility_function: VisibilityFunction,
+    rng: Optional[rnd.Generator] = None,
+) -> Observation:
+    # transform = Transform(position=Position(y=0, x=0), orientation=Orientation.FORWARD)
+    pov_area = area
+    pov_agent_position = Position(0, 0)
+
+    observation_grid = state.grid.subgrid(pov_area)
+    visibility = visibility_function(
+        observation_grid, pov_agent_position, rng=rng
+    )
+
+    if visibility.shape != (area.height, area.width):
+        raise ValueError(
+            f'incorrect visibility shape ({visibility.shape}), '
+            f'should be {(area.height, area.width)}'
+        )
+
+    for pos in observation_grid.area.positions():
+        if not visibility[pos.y, pos.x]:
+            observation_grid[pos] = Hidden()
+
+    observation_agent = Agent(
+        pov_agent_position, Orientation.F, state.agent.grid_object
+    )
+
+    return Observation(observation_grid, observation_agent)
+
 
 @observation_function_registry.register
 def fully_transparent(
@@ -143,6 +175,20 @@ def fully_transparent(
         state,
         area=area,
         visibility_function=visibility_function_registry['fully_transparent'],
+        rng=rng,
+    )
+
+@observation_function_registry.register
+def only_view_map(
+    state: State,
+    *,
+    area: Area,
+    rng: Optional[rnd.Generator] = None,
+) -> Observation:
+    return static_camera(
+        state,
+        area=area,
+        visibility_function=visibility_function_registry['only_view_map'],
         rng=rng,
     )
 
@@ -217,7 +263,6 @@ def factory(name: str, **kwargs) -> ObservationFunction:
         )
         if parameter.default is not inspect.Parameter.empty
     ]
-
     checkraise_kwargs(kwargs, required_keys)
     kwargs = select_kwargs(kwargs, required_keys + optional_keys)
     return partial(function, **kwargs)

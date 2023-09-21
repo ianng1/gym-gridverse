@@ -123,7 +123,8 @@ def default_grid_object_representation_convert(
     :class:`~gym_gridverse.representations.observation_representations.DefaultObservationGridObjectObservationRepresentation`,
     refactored here because of DRY.
     """
-
+    import pdb
+    # pdb.set_trace()
     return np.array(
         [
             grid_object.type_index(),

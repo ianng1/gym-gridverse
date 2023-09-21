@@ -17,7 +17,7 @@ from gym_gridverse.observation import Observation
 from gym_gridverse.rng import make_rng
 from gym_gridverse.spaces import ActionSpace, ObservationSpace, StateSpace
 from gym_gridverse.state import State
-
+import pdb
 
 class GridWorld(InnerEnv):
     """Implementation of the InnerEnv interface."""
@@ -95,6 +95,7 @@ class GridWorld(InnerEnv):
     def functional_observation(self, state: State) -> Observation:
         observation = self._observation_function(state, rng=self._rng)
         if gv_debug() and not self.observation_space.contains(observation):
+            
             raise ValueError('observation does not satisfy observation_space')
 
         return observation

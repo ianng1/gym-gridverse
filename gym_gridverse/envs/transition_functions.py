@@ -194,13 +194,13 @@ def move_agent(
             if isinstance(state.grid[state.agent.position], Map):
                 
                 if isinstance(state.grid[2, 5], Exit):
-                    map_obj.state = Map.MapStatus.TOP
-                    map_obj.color = Color.BLUE
+                    map_obj.state = [Map.MapStatus.TOP, state.agent.position.y, state.agent.position.x]
+                    map_obj.color = Color.GREEN
                 else:
-                    map_obj.state = Map.MapStatus.BOTTOM
-                    map_obj.color = Color.YELLOW
+                    map_obj.state =[Map.MapStatus.BOTTOM, state.agent.position.y, state.agent.position.x]
+                    map_obj.color = Color.BLUE
             else:
-                map_obj.state = Map.MapStatus.UNSEEN
+                map_obj.state = [Map.MapStatus.UNSEEN, state.agent.position.y, state.agent.position.x]
                 map_obj.color = Color.RED
 
                         

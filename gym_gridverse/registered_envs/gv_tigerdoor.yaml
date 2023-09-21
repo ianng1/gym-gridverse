@@ -32,7 +32,5 @@ observation_function:
   area: [ [ 4, 4 ], [ 1, 1 ] ]
 
 terminating_function:
-  name: reduce_any
-  terminating_functions:
-    - name: reach_exit
-    - name: bump_moving_obstacle
+  name: reach_exit
+  name: bump_moving_obstacle

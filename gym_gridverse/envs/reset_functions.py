@@ -636,7 +636,7 @@ def tigerdoor(
     draw_line_vertical(state.grid, range(1, 5), 2, Wall)
 
     state.grid[3, 2] = Floor()
-    state.grid[4, 1] = Map(Map.MapStatus.UNSEEN, Color.RED)
+    state.grid[4, 1] = Map(Map.MapStatus.UNSEEN, (0, 0), Color.RED)
 
     if goal_top:
         state.grid[2, 5] = Exit()

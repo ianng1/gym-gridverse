@@ -5,6 +5,7 @@ from gym_gridverse.action import Action
 from gym_gridverse.observation import Observation
 from gym_gridverse.spaces import ActionSpace, ObservationSpace, StateSpace
 from gym_gridverse.state import State
+import pdb 
 
 __all__ = ['InnerEnv']
 
@@ -112,5 +113,4 @@ class InnerEnv(metaclass=abc.ABCMeta):
         # memoizing observation because observation function can be stochastic
         if self._observation is None:
             self._observation = self.functional_observation(self.state)
-
         return self._observation

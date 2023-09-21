@@ -125,6 +125,15 @@ def fully_transparent(
     return np.ones((grid.shape.height, grid.shape.width), dtype=bool)
 
 
+@visibility_function_registry.register
+def only_view_map(
+    grid: Grid, position: Position, *, rng: Optional[rnd.Generator] = None
+) -> np.ndarray:
+    visibility_ar = np.zeros((grid.shape.height, grid.shape.width), dtype=bool)
+    visibility_ar[0, 0] = 1
+    return visibility_ar 
+
+
 def _partially_occluded_make_visible(
     visibility, grid, position, next_positions
 ):

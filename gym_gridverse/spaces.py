@@ -49,7 +49,7 @@ class StateSpace:
         grid_shape: Shape,
         object_types: Sequence[Type[GridObject]],
         colors: Sequence[Color],
-    ):
+    ):        
         self.grid_shape = grid_shape
         self.object_types = list(object_types)
         self.colors = set(colors) | {Color.NONE}
@@ -156,6 +156,7 @@ class ObservationSpace:
         object_types: Sequence[Type[GridObject]],
         colors: Sequence[Color],
     ):
+
         # TODO we should generalize this
         if grid_shape.width % 2 == 0:
             raise ValueError('shape should have an odd width')

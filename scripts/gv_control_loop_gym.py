@@ -28,6 +28,7 @@ def make_env(id_or_path: str) -> GymEnvironment:
         print(f'Environment with id {id_or_path} not found.')
         print('Loading using YAML')
         inner_env = factory_env_from_yaml(id_or_path)
+        
         state_representation = make_state_representation(
             'default',
             inner_env.state_space,
@@ -69,23 +70,22 @@ def main(args):
         print()
         
         observation = env.reset()
-        episode.append(env.render(mode="rgb_array")[0])
+        episode.append(env.render(mode="rgb_array"))
 
         print('observation:')
         print_compact(observation)
         print()
         time.sleep(spf)
-        actions = [0, 0, 0, 1, 0, 1, 0, 1, 0, 1]
+        actions = [0, 0, 0, 1, 2, 2, 1, 2, 2, 1]
         for ti in range(10): #itt.count():
             print(f'episode: {ei}')
             print(f'time: {ti}')
-            # pdb.set_trace()
 
             #0 is down, 1 is up, 2 is right, 3 is left.
             #action = env.action_space.sample()
             action = actions[ti]
             observation, reward, done, _ = env.step(action)
-            episode.append(env.render(mode="rgb_array")[0])
+            episode.append(env.render(mode="rgb_array"))
 
             print(f'action: {action}')
             print(f'reward: {reward}')
@@ -98,9 +98,12 @@ def main(args):
 
             if done:
                 break
-    out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 5, (episode[0].shape[1], episode[0].shape[0]), True)
+    out = cv2.VideoWriter('output_state.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 5, (episode[0][0].shape[1], episode[0][0].shape[0]), True)
     for i in episode:
-        out.write(i)
+        out.write(i[0][:, :, ::-1])
+    out = cv2.VideoWriter('output_observation.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 5, (episode[0][1].shape[1], episode[0][1].shape[0]), True)
+    for i in episode:
+        out.write(i[1][:, :, ::-1])
     out.release()
 
 if __name__ == "__main__":
